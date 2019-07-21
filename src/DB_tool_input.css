@@ -1,0 +1,10 @@
+.input_root {
+    max-width: 650px;
+    overflow-x: 'auto';
+}
+.input_table {
+    min-width: 650;
+}
+.input_btn{
+    text-align: right;
+}

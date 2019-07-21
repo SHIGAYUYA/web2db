@@ -1,0 +1,8 @@
+.DB_iframe{
+    width: 100vw;
+    overflow-y:hidden;
+    height: 100vh;
+}
+a.nav       {
+    pointer-events: none;
+}

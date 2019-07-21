@@ -1,0 +1,7 @@
+.db_header{
+    overflow-y: scroll;
+    resize: vertical;
+    background-color: #282c34;
+    width: 100vw;
+    height: 20vh;
+}
