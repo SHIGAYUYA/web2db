@@ -58,7 +58,7 @@ class DB_tool_header extends React.Component<IDBToolHeaderProps, IDBToolHeaderSt
             x: 0,
             y: 0,
             width: 800,
-            height: 180,
+            height: 145,
           }}
         >
           <DB_tool_input 

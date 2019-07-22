@@ -26,6 +26,7 @@ var TextField_1 = __importDefault(require("@material-ui/core/TextField"));
 require("./DB_tool_input.css");
 var core_1 = require("@material-ui/core");
 var Box_1 = __importDefault(require("@material-ui/core/Box"));
+var common_1 = __importDefault(require("@material-ui/core/colors/common"));
 var DB_tool_input = /** @class */ (function (_super) {
     __extends(DB_tool_input, _super);
     function DB_tool_input(props) {
@@ -41,9 +42,11 @@ var DB_tool_input = /** @class */ (function (_super) {
     }
     DB_tool_input.prototype.componentDidMount = function () {
         var elem = this.textInputs[this.props.textForcus];
-        setTimeout(function () {
-            elem.focus();
-        }, 0);
+        if (elem) {
+            setTimeout(function () {
+                elem.focus();
+            }, 0);
+        }
     };
     DB_tool_input.prototype.render = function () {
         var _this = this;
@@ -51,8 +54,14 @@ var DB_tool_input = /** @class */ (function (_super) {
             react_1["default"].createElement(Table_1["default"], { className: 'table' },
                 react_1["default"].createElement(TableHead_1["default"], null,
                     react_1["default"].createElement(TableRow_1["default"], null,
-                        react_1["default"].createElement(TableCell_1["default"], null, this.props.header_data[0]),
-                        this.props.header_data.slice(1, this.props.header_data.length).map(function (colume) { return (react_1["default"].createElement(TableCell_1["default"], { align: "right" }, colume)); }))),
+                        react_1["default"].createElement(TableCell_1["default"], { style: {
+                                backgroundColor: common_1["default"].black,
+                                color: common_1["default"].white
+                            } }, this.props.header_data[0]),
+                        this.props.header_data.slice(1, this.props.header_data.length).map(function (colume) { return (react_1["default"].createElement(TableCell_1["default"], { align: "right", style: {
+                                backgroundColor: common_1["default"].black,
+                                color: common_1["default"].white
+                            } }, colume)); }))),
                 react_1["default"].createElement(TableBody_1["default"], null,
                     react_1["default"].createElement(TableRow_1["default"], { key: "TextField" }, this.props.header_data.map(function (colume) { return (react_1["default"].createElement(TableCell_1["default"], { align: "right" },
                         react_1["default"].createElement(TextField_1["default"], { inputRef: function (input) { _this.textInputs[colume] = input; }, id: colume, type: "text", value: _this.props.textValues[colume], onChange: _this.changeText, onBlur: function () {
@@ -73,7 +82,7 @@ var DB_tool_input = /** @class */ (function (_super) {
         if (e.key === 'c' && e.ctrlKey) {
             this.props.setText({ "": "true" });
         }
-        else if (e.key === 'v' && e.ctrlKey) {
+        else if (e.key === 'z' && e.ctrlKey) {
             this.onClickDBInputBtn();
         }
         else if (e.key === 'Tab' || (e.key === 'x' && e.ctrlKey)) {

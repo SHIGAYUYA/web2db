@@ -17,6 +17,7 @@ var App_1 = __importDefault(require("./App"));
 var serviceWorker = __importStar(require("./serviceWorker"));
 var header = ["職業", "HP", "MP"];
 var url = 'https://wikiwiki.jp/seikai/%E3%82%B7%E3%82%B9%E3%83%86%E3%83%A0/%E8%BB%A2%E8%81%B7';
+document.title = "Web2DB";
 react_dom_1["default"].render(react_1["default"].createElement(App_1["default"], { header_data: header, url: url }), document.getElementById('root'));
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

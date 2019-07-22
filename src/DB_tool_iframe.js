@@ -37,7 +37,7 @@ var DB_tool_iframe = /** @class */ (function (_super) {
         if (this.iframeRef !== null) {
             var data;
             var self = this;
-            axios_1["default"].get('http://localhost:3001/url2html/get', {
+            axios_1["default"].get('https://web2db-server.herokuapp.com/url2html/get', {
                 params: {
                     // ここにクエリパラメータを指定する
                     url: self.props.url
@@ -50,6 +50,9 @@ var DB_tool_iframe = /** @class */ (function (_super) {
                 });
             })["catch"](function (error) {
                 console.log(error);
+                self.setState({
+                    innerhtml: "<p>ページが読み込めませんでした</p>"
+                });
             });
             if (this.iframeRef.contentDocument != null) {
                 var els = this.iframeRef.contentDocument.querySelectorAll('a');
@@ -68,7 +71,7 @@ var DB_tool_iframe = /** @class */ (function (_super) {
             if (this.props.url != this.state.lastUrl) {
                 var data;
                 var self = this;
-                axios_1["default"].get('http://localhost:3001/url2html/get', {
+                axios_1["default"].get('https://web2db-server.herokuapp.com/url2html/get', {
                     params: {
                         // ここにクエリパラメータを指定する
                         url: self.props.url
@@ -82,6 +85,10 @@ var DB_tool_iframe = /** @class */ (function (_super) {
                     });
                 })["catch"](function (error) {
                     console.log(error);
+                    self.setState({
+                        innerhtml: "<p>ページが読み込めませんでした</p>",
+                        lastUrl: self.props.url
+                    });
                 });
                 return false;
             }

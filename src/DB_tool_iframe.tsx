@@ -31,7 +31,7 @@ class DB_tool_iframe extends React.Component<IDBToolIframeProps, IDBToolIframeSt
         if (this.iframeRef !== null){
             var data:any;
             var self = this;
-            axios.get('http://localhost:3001/url2html/get',{
+            axios.get('https://web2db-server.herokuapp.com/url2html/get',{
                     params: {
                         // ここにクエリパラメータを指定する
                         url: self.props.url
@@ -46,6 +46,9 @@ class DB_tool_iframe extends React.Component<IDBToolIframeProps, IDBToolIframeSt
                 　//chachでエラーの挙動を定義
                 .catch(function (error) {
                     console.log(error);
+                    self.setState({
+                        innerhtml:"<p>ページが読み込めませんでした</p>"
+                    })
                 });
             if(this.iframeRef.contentDocument != null){
                 var els = this.iframeRef.contentDocument.querySelectorAll('a');
@@ -65,7 +68,7 @@ class DB_tool_iframe extends React.Component<IDBToolIframeProps, IDBToolIframeSt
             if(this.props.url != this.state.lastUrl){
                 var data:string;
                 var self = this;
-                axios.get('http://localhost:3001/url2html/get',{
+                axios.get('https://web2db-server.herokuapp.com/url2html/get',{
                         params: {
                             // ここにクエリパラメータを指定する
                             url: self.props.url
@@ -81,6 +84,10 @@ class DB_tool_iframe extends React.Component<IDBToolIframeProps, IDBToolIframeSt
                     　//chachでエラーの挙動を定義
                     .catch(function (error) {
                         console.log(error);
+                        self.setState({
+                            innerhtml:"<p>ページが読み込めませんでした</p>",
+                            lastUrl:self.props.url
+                        })
                     });
                 return false;
             }

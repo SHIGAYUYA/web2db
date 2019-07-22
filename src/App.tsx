@@ -18,6 +18,9 @@ import MenuIcon from '@material-ui/icons/Menu';
 import Typography from '@material-ui/core/Typography';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import DB_tool_index from './DB_tool_index'
+import DB_tool_url_change from "./DB_tool_url_change"
+
 interface IDBAppProps extends WithStyles<typeof styles> {
   header_data:string[];
   url:string; 
@@ -30,6 +33,7 @@ interface IDBAppState {
   rows: {[key: string]: string;}[];
   anchorEl: Element | ((element: Element) => Element) | null | undefined;
   open: boolean,
+  page:string
 }
 
 
@@ -99,13 +103,18 @@ class App extends React.Component<IDBAppProps, IDBAppState>{
       rows:[],
       open: false,
       anchorEl: null,
+      page:"index"
     };
-    this.chengeForcus = this.chengeForcus.bind(this)
-    this.setText = this.setText.bind(this)
-    this.pushDatum = this.pushDatum.bind(this)
-    this.createCSV = this.createCSV.bind(this)
-    this.handleDownload = this.handleDownload.bind(this)
-    this.db_iframe=null
+    this.chengeForcus = this.chengeForcus.bind(this);
+    this.setText = this.setText.bind(this);
+    this.pushDatum = this.pushDatum.bind(this);
+    this.createCSV = this.createCSV.bind(this);
+    this.handleDownload = this.handleDownload.bind(this);
+    this.moveMain = this.moveMain.bind(this);
+    this.removeMain = this.removeMain.bind(this);
+    this.moveUrlChange = this.moveUrlChange.bind(this);
+    this.removeOnlyMain = this.removeOnlyMain.bind(this);
+    this.db_iframe=null;
   }
 
   chengeForcus(target:string){
@@ -130,6 +139,45 @@ class App extends React.Component<IDBAppProps, IDBAppState>{
     this.setState({ open: false, anchorEl: null }); // 追加
   };
 
+  moveUrlChange = () => {
+    this.setState({ open: false, anchorEl: null, page:"urlChange" }); // 追加
+  };
+
+  moveMain(head:string, url:string){
+    var ary = head.split(',');
+    var textValues:{[key: string]: string;} = {};
+    for(var i=0; i < ary.length; i++){
+        textValues[ary[i]] = ""
+    }
+    this.setState({
+      textValues:textValues,
+      textForcus:ary[0],
+      header_data:ary,
+      url:url,
+      rows:[],
+      page:"main"
+    })
+  }
+
+  removeMain(url:string){
+    var textValues:{[key: string]: string;} = {};
+    for(var i=0; i < this.state.header_data.length; i++){
+        textValues[this.state.header_data[i]] = ""
+    }
+    this.setState({
+      textValues:textValues,
+      textForcus:this.state.header_data[0],
+      url:url,
+      page:"main"
+    })
+  }
+
+  removeOnlyMain(){
+    this.setState({
+      page:"main"
+    })
+  }
+
   private setText(nextTextValues: {[key: string]: string;}) {
     if(nextTextValues[""]){
       if(this.db_iframe){
@@ -145,12 +193,36 @@ class App extends React.Component<IDBAppProps, IDBAppState>{
     this.setState({textValues: nextTextValues});
   }
 
-
-  
-
   render(){
     const classes = this.props.classes;
-    const menuItems = ["メニューサンプル1", "メニューサンプル2", "メニューサンプル3"];
+    var menuItems:string[] = ["No Item"];
+    var menufuncs:Array<() => void> = [this.handleClose];
+    var partial = <div/>;
+    if(this.state.page == "index"){
+      partial = <DB_tool_index moveMain={this.moveMain}/>;
+      
+    }else if(this.state.page == "main"){
+      menuItems = ["URL変更"];
+      menufuncs = [this.moveUrlChange]
+      partial = <div>
+                  <DB_tool_header 
+                    header_data={this.state.header_data} 
+                    textValues={this.state.textValues} 
+                    textForcus={this.state.textForcus} 
+                    chengeForcus={this.chengeForcus}
+                    setText={this.setText}
+                    rows={this.state.rows}
+                    pushDatum={this.pushDatum}
+                    />
+                  <DB_tool_iframe 
+                    ref={(db_iframe: DB_tool_iframe) => { this.db_iframe = db_iframe } } 
+                    url={this.state.url}/>
+                </div>;
+    }else if(this.state.page == "urlChange"){
+      menuItems = ["元のページに戻る"];
+      menufuncs = [this.removeOnlyMain]
+      partial = <DB_tool_url_change removeMain={this.removeMain}/>
+    }
     return (
       <div>
         <div className={classes.appbar_root}>
@@ -169,7 +241,7 @@ class App extends React.Component<IDBAppProps, IDBAppState>{
               onClose={this.handleClose}
         >
               {menuItems.map((item, index) => (
-                <MenuItem key={item} onClick={this.handleClose}>
+                <MenuItem key={item} onClick={menufuncs[index]}>
                   {item}
                 </MenuItem>
               ))}
@@ -177,7 +249,7 @@ class App extends React.Component<IDBAppProps, IDBAppState>{
             <Typography variant="h6" className={classes.appbar_title}>
               Web2DB
             </Typography>
-            <a id="download" href="#" download="test.txt">
+            <a id="download" href="#" download="data.csv">
               <IconButton onClick={this.handleDownload} aria-label="Delete">
                 <ArrowDownwardIcon fontSize="large"/>
               </IconButton>
@@ -186,31 +258,22 @@ class App extends React.Component<IDBAppProps, IDBAppState>{
           </AppBar>
           <div className={classes.toolbar} />  {/* #1 */}
         </div>
-        <DB_tool_header 
-          header_data={this.state.header_data} 
-          textValues={this.state.textValues} 
-          textForcus={this.state.textForcus} 
-          chengeForcus={this.chengeForcus}
-          setText={this.setText}
-          rows={this.state.rows}
-          pushDatum={this.pushDatum}
-          />
-        <DB_tool_iframe ref={(db_iframe: DB_tool_iframe) => { this.db_iframe = db_iframe } } url={this.state.url}/>
+        {partial}
       </div>
     );
   }
   private createCSV(){
     var content = "";
-    console.log(this.state.header_data)
-    console.log(this.state.rows)
+    // console.log(this.state.header_data)
+    // console.log(this.state.rows)
     for(var i = 0; i < this.state.header_data.length; i++){
       content +=  this.state.header_data[i] + ',';
     }
     content += "\n"
     for(var j = 0; j < this.state.rows.length; j++){
       for(var i = 0; i < this.state.header_data.length; i++){
-        if(this.state.rows[i][this.state.header_data[i]]){
-          content +=  this.state.rows[i][this.state.header_data[i]];
+        if(this.state.rows[j][this.state.header_data[i]]){
+          content +=  this.state.rows[j][this.state.header_data[i]] + ',';
         }
       }
       content += "\n"
@@ -219,14 +282,15 @@ class App extends React.Component<IDBAppProps, IDBAppState>{
   }
 
   private handleDownload() {
+    var bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
     var content:string = this.createCSV();
-    var blob = new Blob([ content ], { "type" : "text/plain" });
+    var blob = new Blob([ bom, content ], { "type" : "text/plain" });
 
     if (window.navigator.msSaveBlob) { 
-        window.navigator.msSaveBlob(blob, "test.txt"); 
+        window.navigator.msSaveBlob(blob, "data.csv"); 
 
         // msSaveOrOpenBlobの場合はファイルを保存せずに開ける
-        window.navigator.msSaveOrOpenBlob(blob, "test.txt"); 
+        window.navigator.msSaveOrOpenBlob(blob, "data.csv"); 
     } else {
       var a = document.getElementById("download") as HTMLAnchorElement
       if(a){

@@ -7,6 +7,8 @@ import * as serviceWorker from './serviceWorker';
 var header=["職業", "HP", "MP"]
 var url='https://wikiwiki.jp/seikai/%E3%82%B7%E3%82%B9%E3%83%86%E3%83%A0/%E8%BB%A2%E8%81%B7'
 
+document.title = "Web2DB";
+
 ReactDOM.render(<App header_data={header} url={url}/>, document.getElementById('root'));
 
 // If you want your app to work offline and load faster, you can change

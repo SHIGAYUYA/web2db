@@ -31,6 +31,8 @@ var Menu_1 = __importDefault(require("@material-ui/icons/Menu"));
 var Typography_1 = __importDefault(require("@material-ui/core/Typography"));
 var Menu_2 = __importDefault(require("@material-ui/core/Menu"));
 var MenuItem_1 = __importDefault(require("@material-ui/core/MenuItem"));
+var DB_tool_index_1 = __importDefault(require("./DB_tool_index"));
+var DB_tool_url_change_1 = __importDefault(require("./DB_tool_url_change"));
 var styles = function (theme) { return ({
     toolbar: theme.mixins.toolbar,
     appbar_root: {
@@ -88,6 +90,9 @@ var App = /** @class */ (function (_super) {
         _this.handleClose = function () {
             _this.setState({ open: false, anchorEl: null }); // 追加
         };
+        _this.moveUrlChange = function () {
+            _this.setState({ open: false, anchorEl: null, page: "urlChange" }); // 追加
+        };
         var textValues = {};
         for (var i = 0; i < props.header_data.length; i++) {
             textValues[props.header_data[i]] = "";
@@ -99,13 +104,18 @@ var App = /** @class */ (function (_super) {
             url: props.url,
             rows: [],
             open: false,
-            anchorEl: null
+            anchorEl: null,
+            page: "index"
         };
         _this.chengeForcus = _this.chengeForcus.bind(_this);
         _this.setText = _this.setText.bind(_this);
         _this.pushDatum = _this.pushDatum.bind(_this);
         _this.createCSV = _this.createCSV.bind(_this);
         _this.handleDownload = _this.handleDownload.bind(_this);
+        _this.moveMain = _this.moveMain.bind(_this);
+        _this.removeMain = _this.removeMain.bind(_this);
+        _this.moveUrlChange = _this.moveUrlChange.bind(_this);
+        _this.removeOnlyMain = _this.removeOnlyMain.bind(_this);
         _this.db_iframe = null;
         return _this;
     }
@@ -119,6 +129,38 @@ var App = /** @class */ (function (_super) {
         rows.push(datum);
         this.setState({
             rows: rows
+        });
+    };
+    App.prototype.moveMain = function (head, url) {
+        var ary = head.split(',');
+        var textValues = {};
+        for (var i = 0; i < ary.length; i++) {
+            textValues[ary[i]] = "";
+        }
+        this.setState({
+            textValues: textValues,
+            textForcus: ary[0],
+            header_data: ary,
+            url: url,
+            rows: [],
+            page: "main"
+        });
+    };
+    App.prototype.removeMain = function (url) {
+        var textValues = {};
+        for (var i = 0; i < this.state.header_data.length; i++) {
+            textValues[this.state.header_data[i]] = "";
+        }
+        this.setState({
+            textValues: textValues,
+            textForcus: this.state.header_data[0],
+            url: url,
+            page: "main"
+        });
+    };
+    App.prototype.removeOnlyMain = function () {
+        this.setState({
+            page: "main"
         });
     };
     App.prototype.setText = function (nextTextValues) {
@@ -138,7 +180,24 @@ var App = /** @class */ (function (_super) {
     App.prototype.render = function () {
         var _this = this;
         var classes = this.props.classes;
-        var menuItems = ["メニューサンプル1", "メニューサンプル2", "メニューサンプル3"];
+        var menuItems = ["No Item"];
+        var menufuncs = [this.handleClose];
+        var partial = react_1["default"].createElement("div", null);
+        if (this.state.page == "index") {
+            partial = react_1["default"].createElement(DB_tool_index_1["default"], { moveMain: this.moveMain });
+        }
+        else if (this.state.page == "main") {
+            menuItems = ["URL変更"];
+            menufuncs = [this.moveUrlChange];
+            partial = react_1["default"].createElement("div", null,
+                react_1["default"].createElement(DB_tool_header_1["default"], { header_data: this.state.header_data, textValues: this.state.textValues, textForcus: this.state.textForcus, chengeForcus: this.chengeForcus, setText: this.setText, rows: this.state.rows, pushDatum: this.pushDatum }),
+                react_1["default"].createElement(DB_tool_iframe_1["default"], { ref: function (db_iframe) { _this.db_iframe = db_iframe; }, url: this.state.url }));
+        }
+        else if (this.state.page == "urlChange") {
+            menuItems = ["元のページに戻る"];
+            menufuncs = [this.removeOnlyMain];
+            partial = react_1["default"].createElement(DB_tool_url_change_1["default"], { removeMain: this.removeMain });
+        }
         return (react_1["default"].createElement("div", null,
             react_1["default"].createElement("div", { className: classes.appbar_root },
                 react_1["default"].createElement(core_1.CssBaseline, null),
@@ -146,28 +205,27 @@ var App = /** @class */ (function (_super) {
                     react_1["default"].createElement(Toolbar_1["default"], null,
                         react_1["default"].createElement(IconButton_1["default"], { edge: "start", className: classes.appbar_menuButton, color: "inherit", "aria-label": "Menu", onClick: this.handleClick },
                             react_1["default"].createElement(Menu_1["default"], null)),
-                        react_1["default"].createElement(Menu_2["default"], { id: "menu", open: Boolean(this.state.anchorEl), anchorEl: this.state.anchorEl, onClose: this.handleClose }, menuItems.map(function (item, index) { return (react_1["default"].createElement(MenuItem_1["default"], { key: item, onClick: _this.handleClose }, item)); })),
+                        react_1["default"].createElement(Menu_2["default"], { id: "menu", open: Boolean(this.state.anchorEl), anchorEl: this.state.anchorEl, onClose: this.handleClose }, menuItems.map(function (item, index) { return (react_1["default"].createElement(MenuItem_1["default"], { key: item, onClick: menufuncs[index] }, item)); })),
                         react_1["default"].createElement(Typography_1["default"], { variant: "h6", className: classes.appbar_title }, "Web2DB"),
-                        react_1["default"].createElement("a", { id: "download", href: "#", download: "test.txt" },
+                        react_1["default"].createElement("a", { id: "download", href: "#", download: "data.csv" },
                             react_1["default"].createElement(IconButton_1["default"], { onClick: this.handleDownload, "aria-label": "Delete" },
                                 react_1["default"].createElement(ArrowDownward_1["default"], { fontSize: "large" }))))),
                 react_1["default"].createElement("div", { className: classes.toolbar }),
                 "  "),
-            react_1["default"].createElement(DB_tool_header_1["default"], { header_data: this.state.header_data, textValues: this.state.textValues, textForcus: this.state.textForcus, chengeForcus: this.chengeForcus, setText: this.setText, rows: this.state.rows, pushDatum: this.pushDatum }),
-            react_1["default"].createElement(DB_tool_iframe_1["default"], { ref: function (db_iframe) { _this.db_iframe = db_iframe; }, url: this.state.url })));
+            partial));
     };
     App.prototype.createCSV = function () {
         var content = "";
-        console.log(this.state.header_data);
-        console.log(this.state.rows);
+        // console.log(this.state.header_data)
+        // console.log(this.state.rows)
         for (var i = 0; i < this.state.header_data.length; i++) {
             content += this.state.header_data[i] + ',';
         }
         content += "\n";
         for (var j = 0; j < this.state.rows.length; j++) {
             for (var i = 0; i < this.state.header_data.length; i++) {
-                if (this.state.rows[i][this.state.header_data[i]]) {
-                    content += this.state.rows[i][this.state.header_data[i]];
+                if (this.state.rows[j][this.state.header_data[i]]) {
+                    content += this.state.rows[j][this.state.header_data[i]] + ',';
                 }
             }
             content += "\n";
@@ -175,12 +233,13 @@ var App = /** @class */ (function (_super) {
         return content;
     };
     App.prototype.handleDownload = function () {
+        var bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
         var content = this.createCSV();
-        var blob = new Blob([content], { "type": "text/plain" });
+        var blob = new Blob([bom, content], { "type": "text/plain" });
         if (window.navigator.msSaveBlob) {
-            window.navigator.msSaveBlob(blob, "test.txt");
+            window.navigator.msSaveBlob(blob, "data.csv");
             // msSaveOrOpenBlobの場合はファイルを保存せずに開ける
-            window.navigator.msSaveOrOpenBlob(blob, "test.txt");
+            window.navigator.msSaveOrOpenBlob(blob, "data.csv");
         }
         else {
             var a = document.getElementById("download");

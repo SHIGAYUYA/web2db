@@ -11,6 +11,7 @@ import './DB_tool_input.css'
 import { Button } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import { number } from 'prop-types';
+import common from '@material-ui/core/colors/common';
 
 interface DB_tool_input_prop{
     header_data: string[];
@@ -40,9 +41,11 @@ class DB_tool_input extends React.Component<DB_tool_input_prop, DB_tool_input_st
 
     componentDidMount() {
         const elem = this.textInputs[this.props.textForcus];
-        setTimeout(function(){
-            elem.focus();
-        },0);
+        if(elem){
+            setTimeout(function(){
+                elem.focus();
+            },0);
+        }
     }
 
     render(){
@@ -51,11 +54,18 @@ class DB_tool_input extends React.Component<DB_tool_input_prop, DB_tool_input_st
                 <Table className='table'>
                     <TableHead>
                     <TableRow>
-                        <TableCell>
+                        <TableCell style={{
+                            backgroundColor: common.black,
+                            color: common.white
+                        }}>
                             {this.props.header_data[0]}
                         </TableCell>
                         {this.props.header_data.slice(1, this.props.header_data.length).map(colume => (
-                            <TableCell align="right">{colume}</TableCell>
+                            <TableCell align="right" 
+                                style={{
+                                backgroundColor: common.black,
+                                color: common.white
+                            }}>{colume}</TableCell>
                         ))}
                     </TableRow>
                     </TableHead>
@@ -98,7 +108,7 @@ class DB_tool_input extends React.Component<DB_tool_input_prop, DB_tool_input_st
         // console.log(e.key)
         if (e.key === 'c' && e.ctrlKey) {         
             this.props.setText({"":"true"})
-        }else if (e.key === 'v' && e.ctrlKey) {
+        }else if (e.key === 'z' && e.ctrlKey) {
             this.onClickDBInputBtn()
         }else if (e.key === 'Tab' || (e.key === 'x' && e.ctrlKey)) {
             this.nextFocus()
