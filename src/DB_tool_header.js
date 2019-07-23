@@ -50,7 +50,7 @@ var DB_tool_header = /** @class */ (function (_super) {
             react_1["default"].createElement(DB_tool_table_1["default"], { header_data: this.props.header_data, data: this.props.rows }),
             react_1["default"].createElement(react_rnd_1.Rnd, { "default": {
                     x: 0,
-                    y: 0,
+                    y: 200,
                     width: 800,
                     height: 145
                 } },

@@ -56,7 +56,7 @@ class DB_tool_header extends React.Component<IDBToolHeaderProps, IDBToolHeaderSt
           <DB_tool_table header_data={this.props.header_data} data={this.props.rows}/>
           <Rnd default={{
             x: 0,
-            y: 0,
+            y: 200,
             width: 800,
             height: 145,
           }}
