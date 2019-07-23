@@ -50,42 +50,6 @@ const styles = (theme:Theme) => ({
   },
 })
 
-const BootstrapInput = withStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      'label + &': {
-        marginTop: theme.spacing(3),
-      },
-    },
-    input: {
-      borderRadius: 4,
-      position: 'relative',
-      backgroundColor: theme.palette.common.white,
-      border: '1px solid #ced4da',
-      fontSize: 16,
-      width: 'auto',
-      padding: '10px 12px',
-      transition: theme.transitions.create(['border-color', 'box-shadow']),
-      // Use the system font instead of the default Roboto font.
-      fontFamily: [
-        '-apple-system',
-        'BlinkMacSystemFont',
-        '"Segoe UI"',
-        'Roboto',
-        '"Helvetica Neue"',
-        'Arial',
-        'sans-serif',
-        '"Apple Color Emoji"',
-        '"Segoe UI Emoji"',
-        '"Segoe UI Symbol"',
-      ].join(','),
-      '&:focus': {
-        borderColor: theme.palette.primary.main,
-      },
-    },
-  }),
-)(InputBase);
-
 class App extends React.Component<IDBAppProps, IDBAppState>{
   db_iframe: DB_tool_iframe | null;
 
@@ -114,6 +78,7 @@ class App extends React.Component<IDBAppProps, IDBAppState>{
     this.removeMain = this.removeMain.bind(this);
     this.moveUrlChange = this.moveUrlChange.bind(this);
     this.removeOnlyMain = this.removeOnlyMain.bind(this);
+    this.alertUse = this.alertUse.bind(this)
     this.db_iframe=null;
   }
 
@@ -137,7 +102,12 @@ class App extends React.Component<IDBAppProps, IDBAppState>{
 
   handleClose = () => {
     this.setState({ open: false, anchorEl: null }); // 追加
+    this.alertUse()
   };
+
+  alertUse(){
+    alert ( "Ctrl+c : データ追加\nTab or Ctrl+x : 次のカラムへ\nCtrl+v : テーブル挿入" );
+  }
 
   moveUrlChange = () => {
     this.setState({ open: false, anchorEl: null, page:"urlChange" }); // 追加
@@ -157,6 +127,7 @@ class App extends React.Component<IDBAppProps, IDBAppState>{
       rows:[],
       page:"main"
     })
+    alert ( "Ctrl+c : データ追加\nTab or Ctrl+x : 次のカラムへ\nCtrl+v : テーブル挿入" );
   }
 
   removeMain(url:string){
@@ -195,15 +166,15 @@ class App extends React.Component<IDBAppProps, IDBAppState>{
 
   render(){
     const classes = this.props.classes;
-    var menuItems:string[] = ["No Item"];
+    var menuItems:string[] = ["使い方表示"];
     var menufuncs:Array<() => void> = [this.handleClose];
     var partial = <div/>;
     if(this.state.page == "index"){
       partial = <DB_tool_index moveMain={this.moveMain}/>;
       
     }else if(this.state.page == "main"){
-      menuItems = ["URL変更"];
-      menufuncs = [this.moveUrlChange]
+      menuItems = ["使い方表示","URL変更"];
+      menufuncs = [this.handleClose,this.moveUrlChange]
       partial = <div>
                   <DB_tool_header 
                     header_data={this.state.header_data} 
@@ -219,8 +190,8 @@ class App extends React.Component<IDBAppProps, IDBAppState>{
                     url={this.state.url}/>
                 </div>;
     }else if(this.state.page == "urlChange"){
-      menuItems = ["元のページに戻る"];
-      menufuncs = [this.removeOnlyMain]
+      menuItems = ["使い方表示","元のページに戻る"];
+      menufuncs = [this.handleClose,this.removeOnlyMain]
       partial = <DB_tool_url_change removeMain={this.removeMain}/>
     }
     return (

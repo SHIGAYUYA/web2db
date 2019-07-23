@@ -24,7 +24,6 @@ var core_1 = require("@material-ui/core");
 var AppBar_1 = __importDefault(require("@material-ui/core/AppBar"));
 var Toolbar_1 = __importDefault(require("@material-ui/core/Toolbar"));
 var styles_1 = require("@material-ui/core/styles");
-var InputBase_1 = __importDefault(require("@material-ui/core/InputBase"));
 var ArrowDownward_1 = __importDefault(require("@material-ui/icons/ArrowDownward"));
 var IconButton_1 = __importDefault(require("@material-ui/core/IconButton"));
 var Menu_1 = __importDefault(require("@material-ui/icons/Menu"));
@@ -45,41 +44,6 @@ var styles = function (theme) { return ({
         flexGrow: 1
     }
 }); };
-var BootstrapInput = styles_1.withStyles(function (theme) {
-    return styles_1.createStyles({
-        root: {
-            'label + &': {
-                marginTop: theme.spacing(3)
-            }
-        },
-        input: {
-            borderRadius: 4,
-            position: 'relative',
-            backgroundColor: theme.palette.common.white,
-            border: '1px solid #ced4da',
-            fontSize: 16,
-            width: 'auto',
-            padding: '10px 12px',
-            transition: theme.transitions.create(['border-color', 'box-shadow']),
-            // Use the system font instead of the default Roboto font.
-            fontFamily: [
-                '-apple-system',
-                'BlinkMacSystemFont',
-                '"Segoe UI"',
-                'Roboto',
-                '"Helvetica Neue"',
-                'Arial',
-                'sans-serif',
-                '"Apple Color Emoji"',
-                '"Segoe UI Emoji"',
-                '"Segoe UI Symbol"',
-            ].join(','),
-            '&:focus': {
-                borderColor: theme.palette.primary.main
-            }
-        }
-    });
-})(InputBase_1["default"]);
 var App = /** @class */ (function (_super) {
     __extends(App, _super);
     function App(props) {
@@ -89,6 +53,7 @@ var App = /** @class */ (function (_super) {
         };
         _this.handleClose = function () {
             _this.setState({ open: false, anchorEl: null }); // 追加
+            _this.alertUse();
         };
         _this.moveUrlChange = function () {
             _this.setState({ open: false, anchorEl: null, page: "urlChange" }); // 追加
@@ -116,6 +81,7 @@ var App = /** @class */ (function (_super) {
         _this.removeMain = _this.removeMain.bind(_this);
         _this.moveUrlChange = _this.moveUrlChange.bind(_this);
         _this.removeOnlyMain = _this.removeOnlyMain.bind(_this);
+        _this.alertUse = _this.alertUse.bind(_this);
         _this.db_iframe = null;
         return _this;
     }
@@ -131,6 +97,9 @@ var App = /** @class */ (function (_super) {
             rows: rows
         });
     };
+    App.prototype.alertUse = function () {
+        alert("Ctrl+c : データ追加\nTab or Ctrl+x : 次のカラムへ\nCtrl+v : テーブル挿入");
+    };
     App.prototype.moveMain = function (head, url) {
         var ary = head.split(',');
         var textValues = {};
@@ -145,6 +114,7 @@ var App = /** @class */ (function (_super) {
             rows: [],
             page: "main"
         });
+        alert("Ctrl+c : データ追加\nTab or Ctrl+x : 次のカラムへ\nCtrl+v : テーブル挿入");
     };
     App.prototype.removeMain = function (url) {
         var textValues = {};
@@ -180,22 +150,22 @@ var App = /** @class */ (function (_super) {
     App.prototype.render = function () {
         var _this = this;
         var classes = this.props.classes;
-        var menuItems = ["No Item"];
+        var menuItems = ["使い方表示"];
         var menufuncs = [this.handleClose];
         var partial = react_1["default"].createElement("div", null);
         if (this.state.page == "index") {
             partial = react_1["default"].createElement(DB_tool_index_1["default"], { moveMain: this.moveMain });
         }
         else if (this.state.page == "main") {
-            menuItems = ["URL変更"];
-            menufuncs = [this.moveUrlChange];
+            menuItems = ["使い方表示", "URL変更"];
+            menufuncs = [this.handleClose, this.moveUrlChange];
             partial = react_1["default"].createElement("div", null,
                 react_1["default"].createElement(DB_tool_header_1["default"], { header_data: this.state.header_data, textValues: this.state.textValues, textForcus: this.state.textForcus, chengeForcus: this.chengeForcus, setText: this.setText, rows: this.state.rows, pushDatum: this.pushDatum }),
                 react_1["default"].createElement(DB_tool_iframe_1["default"], { ref: function (db_iframe) { _this.db_iframe = db_iframe; }, url: this.state.url }));
         }
         else if (this.state.page == "urlChange") {
-            menuItems = ["元のページに戻る"];
-            menufuncs = [this.removeOnlyMain];
+            menuItems = ["使い方表示", "元のページに戻る"];
+            menufuncs = [this.handleClose, this.removeOnlyMain];
             partial = react_1["default"].createElement(DB_tool_url_change_1["default"], { removeMain: this.removeMain });
         }
         return (react_1["default"].createElement("div", null,

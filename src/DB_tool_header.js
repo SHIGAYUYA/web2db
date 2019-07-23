@@ -52,7 +52,7 @@ var DB_tool_header = /** @class */ (function (_super) {
                     x: 0,
                     y: 200,
                     width: 800,
-                    height: 145
+                    height: 150
                 } },
                 react_1["default"].createElement(DB_tool_input_1["default"], { header_data: this.props.header_data, pushDatum: this.props.pushDatum, textValues: this.props.textValues, textForcus: this.props.textForcus, chengeForcus: this.props.chengeForcus, setText: this.props.setText }))));
     };
